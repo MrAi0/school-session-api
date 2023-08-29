@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(dbgenerated("gen_random_uuid()::text"))
+  fullName          String    @map("full_name")
+  userName          String    @map("user_name")
+  password          String
+  universityId      String    @unique @default(dbgenerated("gen_random_uuid()::text")) @map("university_id")
+  role              RoleEnum
+  sessionSignature  String?   @map("session_signature")
+  createdAt         DateTime  @map("created_at")
+  updatedAt         DateTime  @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+  sessionsAsDean    Session[] @relation("Dean")
+  sessionsAsStudent Session[] @relation("Student")
+
+  @@map("user")
+}
+
+model Session {
+  id        String    @id @default(dbgenerated("gen_random_uuid()::text"))
+  startsAt  DateTime  @map("starts_at")
+  endsAt    DateTime  @map("ends_at")
+  createdAt DateTime  @map("created_at")
+  updatedAt DateTime  @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  deanId    String
+  studentId String
+  dean      User      @relation("Dean", fields: [deanId], references: [id])
+  student   User      @relation("Student", fields: [studentId], references: [id])
+
+  @@map("session")
+}
+
+enum RoleEnum {
+  student
+  dean
+}
