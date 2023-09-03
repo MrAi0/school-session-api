@@ -60,11 +60,11 @@ export class UserService {
                 throw new NotFoundException("User not found");
             }
             const response = new GetSessionResponseDtoArray();
-            response.sessionData = [];
             switch (role) {
                 case 'dean': {
                     const occurrences = this.getDateOccurencesArray(userData.sessionSignature);
                     const userDate = await this.userRepository.getSessions(userId, occurrences, role);
+                    response.sessionData = [];
                     if (userDate.length > 0) {
                         for (const elem of userDate) {
                             const resp = new GetSessionResDto()
@@ -90,11 +90,12 @@ export class UserService {
                     const userDate = await this.userRepository.getSessions(deanUserData.id, occurrences, role);
                     if (userDate.length < 1) {
                         const res = this.getDateStartEndStrings(occurrences);
+                        response.deanId = deanUserData.id;
+                        response.deanUniId = deanUserData.universityId;
+                        response.fullName = deanUserData.fullName;
+                        response.sessionData = [];
                         for (const elem of res) {
                             const resp = new GetSessionResDto()
-                            resp.deanId = deanUserData.id;
-                            resp.deanUniId = deanUserData.universityId;
-                            resp.fullName = deanUserData.fullName;
                             resp.startsAt = elem.startsAt;
                             resp.endsAt = elem.endsAt;
                             response.sessionData.push(resp);
@@ -107,12 +108,12 @@ export class UserService {
                     });
 
                     const res = this.getDateStartEndStrings(filteredDateTimeArray);
-
+                    response.deanId = deanUserData.id;
+                    response.deanUniId = deanUserData.universityId;
+                    response.fullName = deanUserData.fullName;
+                    response.sessionData = [];
                     for (const elem of res) {
                         const resp = new GetSessionResDto();
-                        resp.deanId = deanUserData.id;
-                        resp.deanUniId = deanUserData.universityId;
-                        resp.fullName = deanUserData.fullName;
                         resp.startsAt = elem.startsAt;
                         resp.endsAt = elem.endsAt;
                         response.sessionData.push(resp);
@@ -120,8 +121,6 @@ export class UserService {
                     break;
                 }
             }
-
-
             return response;
 
         } catch (error) {

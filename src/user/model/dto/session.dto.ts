@@ -19,16 +19,18 @@ export class GetSessionReqDto {
 }
 
 export class GetSessionResponseDtoArray {
+    deanId?: string;
+
+    deanUniId?: string;
+
+    fullName: string;
+
     sessionData: GetSessionResDto[]
 }
 
 export class GetSessionResDto {
 
-    deanId?: string;
-
     studentId?: string;
-
-    deanUniId?: string;
 
     studentUniId?: string;
 
